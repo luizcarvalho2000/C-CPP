@@ -5,11 +5,11 @@ int main()
 {
     // setlocale serve para suportar UTF-8( depois de terminar o codigo digite 
     // CRTL+Shift+P - Change File Encoding - Save Witch Encoding - Wetern Iso 8859-1)
-    setlocale(LC_ALL, "Portuguese");
+    setlocale(LC_ALL, "");
     double num1, num2;
     double soma, subtracao, multiplicacao, divisao;
 
-    // Leitura dos dois n�meros
+    // Leitura dos dois numeros
 
     printf("Digite o primeiro n�mero:\n ");
     scanf("%lf", &num1);
