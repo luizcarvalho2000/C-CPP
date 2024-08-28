@@ -1,0 +1,59 @@
+#include <map>
+#include <limits>
+#include <iterator>
+
+template<typename K, typename V>
+class interval_map {
+    friend void IntervalMapTest();
+    V m_valBegin;
+    std::map<K,V> m_map;
+
+public:
+    // constructor associates whole range of K with val
+    interval_map(V const& val)
+    : m_valBegin(val)
+    {}
+
+    // Assign value val to interval [keyBegin, keyEnd).
+    // Overwrite previous values in this interval.
+    // The interval includes keyBegin, but excludes keyEnd.
+    // If !( keyBegin < keyEnd ), this designates an empty interval,
+    // and assign must do nothing.
+    void assign(K const& keyBegin, K const& keyEnd, V const& val) {
+        if (!(keyBegin < keyEnd)) return;
+
+        // Find the first element that is not less than keyBegin
+        auto start = m_map.lower_bound(keyBegin);
+
+        // If start is not at the beginning and the previous element is equal to val
+        if (start != m_map.begin() && std::prev(start)->second == val) {
+            // Move start one step backwards
+            --start;
+        } else {
+            // Insert keyBegin and val
+            start = m_map.insert(start, {keyBegin, val});
+        }
+
+        // Find the first element that is not less than keyEnd
+        auto end = m_map.lower_bound(keyEnd);
+
+        // If end is not at the end and the next element is not equal to val
+        if (end != m_map.end() && end->second != val) {
+            // Insert keyEnd and the value of end
+            m_map.insert(end, {keyEnd, end->second});
+        }
+
+        // Erase all elements in the range [start, end)
+        m_map.erase(std::next(start), end);
+    }
+
+    // Returns the value associated with a key
+    V const& operator[](K const& key) const {
+        auto it = m_map.upper_bound(key);
+        if (it == m_map.begin()) {
+            return m_valBegin;
+        } else {
+            return (--it)->second;
+        }
+    }
+};
